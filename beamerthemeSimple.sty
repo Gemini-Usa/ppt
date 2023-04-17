@@ -1,0 +1,60 @@
+\mode<presentation>
+
+% Settings
+\usetheme[secheader]{Madrid}
+\useinnertheme{circles}
+% \useoutertheme{simpleinfo}
+\useoutertheme{infolines} % Alternatively: miniframes, infolines, split
+\usefonttheme{Simple}
+\usecolortheme{DarkBlue}
+
+% \setbeamertemplate{footline} % To remove the footer line in all slides uncomment this line
+%\setbeamertemplate{footline}[page number] % To replace the footer line in all slides with a simple slide count uncomment this line
+%\setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides uncomment this line
+\setbeamertemplate{blocks}[rounded]
+\setbeamertemplate{enumerate items}[default]
+% table of contents (overview)
+\setbeamertemplate{section in toc}{%
+  \leavevmode\leftskip=1.75ex%z
+  \llap{%
+    \usebeamerfont*{section number projected}%
+    \usebeamercolor[bg]{section number projected}%
+    \raise.4ex\hbox{\vrule width2.25ex height1.85ex depth.4ex%
+    \hskip-2.25ex%
+    \hbox to2.25ex{\hfil\color{fg}\inserttocsectionnumber\hfil}}}%
+  \kern1.25ex\inserttocsection\par%
+}
+\setbeamertemplate{subsection in toc}{%
+  \leavevmode\leftskip=2em$\bullet$\hskip.5em\inserttocsubsection\par%
+}
+% \addtobeamertemplate{frametitle}{}{%
+%   \begin{tikzpicture}[remember picture,overlay]
+%     \node[anchor=east] at ([yshift=3.3cm]current page.east) {\includegraphics[height=.5cm]{logo.png}};
+%   \end{tikzpicture}%
+% }
+
+\newlength{\picheight}
+\setbeamertemplate{frametitle}{%
+  \ifbeamercolorempty[bg]{frametitle}{}{\nointerlineskip}%
+  \@tempdima=\textwidth%
+  \advance\@tempdima by\beamer@leftmargin%
+  \advance\@tempdima by\beamer@rightmargin%
+  \begin{beamercolorbox}[sep=0.3cm,wd=\the\@tempdima]{frametitle}
+    \usebeamerfont{frametitle}%
+    \vbox{}\vskip-1.5ex%
+    \settoheight{\picheight}{地}
+    %\if@tempswa\else\csname beamer@fte#1\endcsname\fi%
+    \strut\insertframetitle\hfill\includegraphics[height=\picheight]{logo.png}\strut\par%
+    {%
+      \ifx\insertframesubtitle\@empty%
+      \else%
+      {\usebeamerfont{framesubtitle}\usebeamercolor[fg]{framesubtitle}\strut\insertframesubtitle\strut\par}%
+      \fi
+    }%
+    \vskip-1ex%
+    %\if@tempswa\else\vskip-.3cm\fi% set inside beamercolorbox... evil here...
+  \end{beamercolorbox}%
+}
+
+
+\mode<all>
