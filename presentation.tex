@@ -103,7 +103,7 @@
 \title[Maui Based Android Smartphone Development]{基于.NET 7 MAUI的PDR跨平台软件设计}
 \subtitle{位置服务与实践答辩}
 
-\author[counter navier admin]{反导航吧吧务}
+\author[LX Navi]{1组-崔宇璐\ 周天晨\ 陶安博}
 
 \institute[WHU]
 {
@@ -277,7 +277,7 @@
 \end{figure}
 \begin{enumerate}
     \item[\ding{172}] $\symbfit{m}^{\mathrm{n}_\ell}=\symbfit{C}_\mathrm{b}^{\mathrm{n}_\ell}\symbfit{m}^\mathrm{b}$,
-    \item[\ding{173}] $\psi_{\mathrm{m}'}=-\mathrm{atan}_2(m_y^{\mathrm{n}_\ell},m_x^{\mathrm{n}_\ell})$,
+    \item[\ding{173}] $\psi_{\mathrm{m}'}=-\mathrm{atan}_2(m_{\smash{y}}^{\mathrm{n}_\ell},m_{\smash{x}}^{\mathrm{n}_\ell})$,
     \item[\ding{174}] $\psi_\mathrm{m}=\psi_{\mathrm{m}'}+D$,式中$D$为磁偏角.
 \end{enumerate}
 可以通过国际地磁参考场(IGRF)模型获取磁偏角。
@@ -362,9 +362,9 @@
 \begin{frame}
   \frametitle{Overview}
   \begin{itemize}
-    \item 移动端传感器接口：\href{https://learn.microsoft.com/zh-cn/dotnet/maui/platform-integration/device/sensors?view=net-maui-7.0\&tabs=android\#orientation}{访问设备传感器\ \faWindows}并进行时间序列图绘制
+    \item 移动端传感器接口：\href{https://learn.microsoft.com/zh-cn/dotnet/maui/platform-integration/device/sensors?view=net-maui-7.0\&tabs=android\#orientation}{访问设备传感器\ \faWindows} 并进行时间序列图绘制
     \item 算法程序设计
-    \item Google Maps接口：\href{https://developers.google.com/maps/documentation/android-sdk/get-api-key?hl=zh-cn}{申请key\ \faGoogle}和\href{https://learn.microsoft.com/zh-cn/dotnet/maui/user-interface/controls/map?view=net-maui-7.0}{数据映射\ \faWindows}
+    \item Google Maps接口：\href{https://developers.google.com/maps/documentation/android-sdk/get-api-key?hl=zh-cn}{申请key\ \faGoogle} 和\href{https://learn.microsoft.com/zh-cn/dotnet/maui/user-interface/controls/map?view=net-maui-7.0}{数据映射\ \faWindows}
   \end{itemize}
   \begin{figure}[ht]
     \centering
@@ -405,38 +405,25 @@
   \end{table}
 \end{frame}
 
-\subsection{PDR算法设计}
-\begin{frame}[fragile]
-  \frametitle{算法流程}
-  \begin{itemize}
-    \item 底层采用\texttt{C\#}语言编写
-    \item 设计了 \mintinline{csharp}{class DeadReckoning}，其中包含航迹推算算法
-    \item 设计了 \mintinline{csharp}{class DeadReckoningMeasurement}，用于储存观测值
-  \end{itemize}
-  \begin{block}{函数成员}
-  \begin{minted}{csharp}
-    public class DeadReckoning
-    {
-      public Vector2 GetCurrentCoord(DeadReckoningMeasurement measurement);
-      public double GetSmoothedAccelerationData(int size, double acceleration);
-      private bool StepDetect(double acceleration);
-    }
-  \end{minted}
-  \end{block}
-\end{frame}
 
 \subsection{数据可视化}
-\begin{frame}
+\begin{frame}[fragile]
   软件实现的主要功能如下：
   \begin{itemize}
     \item 对三轴加速度计、陀螺仪、磁强计的数据进行实时监测
     \item 对传感器数据进行实时的时间序列图绘制，可实现数据保存和分享
-    \item 可以获取定位，并告知用户BLH坐标
+    \item 可以获取定位，并告知用户经纬度
     \item 可以在Google Maps中展示PDR推算轨迹
   \end{itemize}
   实现的方法如下：
   \begin{itemize}
-    \item 
+    \item 使用 \mintinline{csharp}{public void ToggleAccelerometer()} 方法对加计进行监听
+    \item 利用第三方控件 \mintinline{csharp}{Syncfusion.Maui.Charts} 进行时间序列图展示
+    \item \nointerlineskip\begin{minted}[bgcolor=gray!10]{csharp}
+public static Task<Location?> GetLocationAsync (GeolocationRequest request, CancellationToken cancelToken);
+    \end{minted}
+
+    \nointerlineskip 参数 \mintinline{csharp}{request} 表示确定设备位置时要使用的条件，\mintinline{csharp}{cancelToken} 表示用于取消操作的令牌。
   \end{itemize}
 \end{frame}
 
@@ -478,6 +465,72 @@
     \end{columns}
 \end{frame}
 
+\subsection{主要代码}
+\begin{frame}[fragile]
+  \frametitle{PDR}
+  \begin{itemize}
+    \item 底层采用\texttt{C\#}语言编写
+    \item 设计了 \mintinline{csharp}{class DeadReckoning}，其中包含航迹推算算法
+    \item 设计了 \mintinline{csharp}{class DeadReckoningMeasurement}，用于储存观测值
+  \end{itemize}
+  \begin{block}{函数成员}
+  \begin{minted}{csharp}
+public class DeadReckoning
+{
+  public Vector2 GetCurrentCoord(DeadReckoningMeasurement measurement);
+  public double GetSmoothedAccelerationData(int size, double acceleration);
+  private bool StepDetect(double acceleration);
+}
+  \end{minted}
+  \end{block}
+\end{frame}
+
+\begin{frame}{Google Maps API}
+  \begin{table}[htb]
+    \centering
+    \begin{tblr}{
+      colspec={X[c,m]X[c,m]X[c,m]X[c,m]X[c,m]X[c,m]},
+      hline{1,Z}={1pt},
+      hline{2,3},
+      cell{1}{1}={r=2}{c},
+      cell{1}{2}={r=2}{c},
+      cell{1}{3}={r=2}{c},
+      cell{1}{4}={r=2}{c},
+      cell{1}{5}={c=2}{c}
+    }
+    地图名 & 范围 & 精度 & 偏移问题 & API 和 SDK & \\ 
+    & & & & 申请 & 使用 \\
+    Google Maps & 全球 & 最高 & 存在 & 不便 & 文档详尽、接口丰富 \\
+    Bing Maps & 全球 & 次之 & 存在 & 不便 & 微软出品 \\
+    高德地图 & 中国地区 & 略低 & 无偏移 & 方便 & 接口单一 \\
+    \end{tblr}
+  \end{table}
+  以 Google Maps 和高德地图为例，在 Android SDK 方面，高德地图只提供了 Java 代码的旧框架示例代码，而 Google Maps 对新的 Jetpack Compose 框架和微软的 MAUI 框架都有良好的支持。
+\end{frame}
+
+\begin{frame}[fragile]{Google Maps 使用}
+  \begin{block}{添加线段}
+  \begin{minted}{csharp}
+Map map = new Map();
+// 实例化一个线段
+Polyline polyline = new Polyline
+{
+    StrokeColor = Colors.Blue,
+    StrokeWidth = 12,
+    Geopath =
+    {
+        new Location(47.6381401, -122.1317367),
+        new Location(47.6381473, -122.1350841)
+    }
+};
+// 添加线段到地图
+map.MapElements.Add(polyline);
+  \end{minted}
+  \end{block}
+\end{frame}
+
+
+
 \section{结果展示及精度分析}
 \begin{frame}{Overview}
   \tableofcontents[currentsection,currentsubsection]
@@ -485,12 +538,35 @@
 
 \subsection{中间结果}
 \begin{frame}
-  测试
+  \begin{columns}
+    \column{0.5\linewidth}
+    \begin{figure}
+      \centering
+      \includegraphics[width=\linewidth]{figures/resultAccl.pdf}
+    \end{figure}
+    \column{0.5\linewidth}
+    \begin{figure}
+      \centering
+      \includegraphics[width=\linewidth]{figures/resultYaw.pdf}
+    \end{figure}
+  \end{columns}
+  \begin{itemize}
+    \item 呈现明显的周期性
+    \item 初始航向不稳定，算法有待改进
+    \item 计步器计数结果为$1264$步
+  \end{itemize}
 \end{frame}
 
 \subsection{精度分析}
 \begin{frame}
-  测试
+  \begin{figure}
+    \centering
+    \includegraphics[width=.7\linewidth]{figures/result.pdf}
+  \end{figure}
+  \begin{itemize}
+    \item 第一圈（大约 \qty{400}{m} 后），闭合差为 \qty{14.73}{m}
+    \item 随后闭合差减小，结合航向角图像来看，第一圈的闭合差大是因为初始航向角没有对准导致的
+  \end{itemize}
 \end{frame}
 
 \section*{参考文献}
